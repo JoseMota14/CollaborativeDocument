@@ -1,31 +1,48 @@
-﻿using EventSourcingCollaborativeDocs.Models;
+﻿using EventSourcingCollaborativeDocs.Context;
+using EventSourcingCollaborativeDocs.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EventSourcingCollaborativeDocs.Repositories
 {
     public class DocumentRepository : IDocumentRepository
     {
+        private readonly ApplicationDbContext _dbContext;
 
-
-        public DocumentRepository() { }
-
-        public Task DeleteAsync(Guid id)
+        public DocumentRepository(ApplicationDbContext dbContext)
         {
-            throw new NotImplementedException();
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
-        public Task<Document> GetByIdAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var documentToDelete = await GetByIdAsync(id);
+            if (documentToDelete != null)
+            {
+                _dbContext.Documents.Remove(documentToDelete);
+                await _dbContext.SaveChangesAsync();
+            }
         }
 
-        public Task<List<Document>> GetAllDocumentsAsync()
+        public async Task<Document> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Documents.FirstOrDefaultAsync(d => d.Id == id);
         }
 
-        public Task SaveAsync(Document document)
+        public async Task<List<Document>> GetAllDocumentsAsync()
         {
-            throw new NotImplementedException();
+            return await _dbContext.Documents.ToListAsync();
+        }
+
+        public async Task SaveAsync(Document document)
+        {
+            _dbContext.Documents.Add(document);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateDocumentAsync(Document document)
+        {
+            _dbContext.Documents.Update(document);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

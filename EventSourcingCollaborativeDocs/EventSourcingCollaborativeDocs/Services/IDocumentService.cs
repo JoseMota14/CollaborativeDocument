@@ -1,12 +1,11 @@
 ﻿using EventSourcingCollaborativeDocs.Models;
 
-namespace EventSourcingCollaborativeDocs.Repositories
+namespace EventSourcingCollaborativeDocs.Services
 {
-    public interface IDocumentRepository
+    public interface IDocumentService
     {
         Task<Document> GetByIdAsync(Guid id);
         Task SaveAsync(Document document);
-        Task UpdateDocumentAsync(Document document);
         Task DeleteAsync(Guid id);
         Task<List<Document>> GetAllDocumentsAsync();
     }

@@ -1,5 +1,5 @@
 ﻿using EventSourcingCollaborativeDocs.Models;
-using EventSourcingCollaborativeDocs.Repositories;
+using EventSourcingCollaborativeDocs.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventSourcingCollaborativeDocs.Controllers
@@ -8,24 +8,24 @@ namespace EventSourcingCollaborativeDocs.Controllers
     [Route("api/documents")]
     public class DocumentsController : ControllerBase
     {
-        private readonly DocumentRepository _documentRepository;
+        private readonly IDocumentService _documentService;
 
-        public DocumentsController(DocumentRepository documentRepository)
+        public DocumentsController(IDocumentService documentService)
         {
-            _documentRepository = documentRepository ?? throw new ArgumentNullException(nameof(documentRepository));
+            _documentService = documentService ?? throw new ArgumentNullException(nameof(documentService));
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Document>>> GetAllDocumentsAsync()
         {
-            var documents = await _documentRepository.GetAllDocumentsAsync();
+            var documents = await _documentService.GetAllDocumentsAsync();
             return Ok(documents);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Document>> GetDocumentByIdAsync(Guid id)
         {
-            var document = await _documentRepository.GetByIdAsync(id);
+            var document = await _documentService.GetByIdAsync(id);
             if (document == null)
             {
                 return NotFound();
@@ -36,8 +36,15 @@ namespace EventSourcingCollaborativeDocs.Controllers
         [HttpPost]
         public async Task<ActionResult<Document>> CreateDocumentAsync(Document document)
         {
-            await _documentRepository.SaveAsync(document);
-            return CreatedAtAction(nameof(GetDocumentByIdAsync), new { id = document.Id }, document);
+            try
+            {
+                await _documentService.SaveAsync(document);
+                return CreatedAtAction(nameof(GetDocumentByIdAsync), new { id = document.Id }, document);
+            }catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpPut("{id}")]
@@ -48,26 +55,26 @@ namespace EventSourcingCollaborativeDocs.Controllers
                 return BadRequest();
             }
 
-            var existingDocument = await _documentRepository.GetByIdAsync(id);
+            var existingDocument = await _documentService.GetByIdAsync(id);
             if (existingDocument == null)
             {
                 return NotFound();
             }
 
-            await _documentRepository.SaveAsync(document);
+            await _documentService.SaveAsync(document);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDocumentAsync(Guid id)
         {
-            var document = await _documentRepository.GetByIdAsync(id);
+            var document = await _documentService.GetByIdAsync(id);
             if (document == null)
             {
                 return NotFound();
             }
 
-            await _documentRepository.DeleteAsync(id);
+            await _documentService.DeleteAsync(id);
             return NoContent();
         }
     }

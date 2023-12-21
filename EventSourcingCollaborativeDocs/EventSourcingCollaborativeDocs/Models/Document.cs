@@ -5,8 +5,10 @@
         public Guid Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
-        public string AuthorId { get; set; }  // Id of the user who created the document
+        public string AuthorId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastModifiedAt { get; set; }
+
+        public List<User> Writters { get; set; }
     }
 }

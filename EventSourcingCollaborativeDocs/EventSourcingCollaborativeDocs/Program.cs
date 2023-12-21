@@ -3,7 +3,6 @@ using EventSourcingCollaborativeDocs.Infra;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddInfrastucture(builder.Configuration);
 
 builder.Services.AddControllers();
