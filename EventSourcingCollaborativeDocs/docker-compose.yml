@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  doc-api:
+    build:
+      context: .
+    container_name: doc-container-api
+    ports:
+      - 8082:80

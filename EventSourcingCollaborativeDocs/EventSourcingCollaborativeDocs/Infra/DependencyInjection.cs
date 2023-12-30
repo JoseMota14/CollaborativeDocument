@@ -27,6 +27,8 @@ namespace EventSourcingCollaborativeDocs.Infra
                                       .AllowCredentials());
             });*/
 
+            services.AddHealthChecks();
+
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>
