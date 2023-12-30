@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docs-app-deployment # Name of the deployment
+spec:
+  replicas: 3 # Number of desired replicas (pods)
+  selector:
+    matchLabels:
+      app: docs-app # Label selector to match pods controlled by this deployment
+  template:
+    metadata:
+      labels:
+        app: docs-app # Labels applied to pods created by this deployment
+    spec:
+      containers:
+        - name: docs-app # Name of the container
+          image: eventsourcingcollaborativedocs:latest # Docker image to use
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80 # Port to expose within the pod
